@@ -7,7 +7,7 @@ import cloudinary
 import cloudinary.uploader
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TZ_PLOTS_SECURE_2026')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TZ_PLOTS_MASTER_PRO_2026')
 
 # Cloudinary Setup
 cloudinary.config(
@@ -50,12 +50,11 @@ def load_user(id): return User.query.get(int(id))
 # --- INITIALIZATION ---
 with app.app_context():
     db.create_all()
-    # Updated default password to "tz plots"
     if not User.query.filter_by(username='admin').first():
         db.session.add(User(username='admin', password='tz plots'))
         db.session.commit()
 
-# --- ROUTES ---
+# --- PUBLIC ROUTES ---
 @app.route('/')
 def index():
     loc = request.args.get('location')
@@ -74,25 +73,13 @@ def login():
         flash('Namba au Nywila sio sahihi')
     return render_template('login.html')
 
+# --- ADMIN ROUTES ---
 @app.route('/admin')
 @login_required
 def admin_dashboard():
+    properties = Property.query.order_by(Property.id.desc()).all()
     inquiries = Inquiry.query.order_by(Inquiry.date_created.desc()).all()
-    return render_template('admin.html', inquiries=inquiries)
-
-@app.route('/change_password', methods=['POST'])
-@login_required
-def change_password():
-    old_pw = request.form.get('old_password')
-    new_pw = request.form.get('new_password')
-    
-    if current_user.password == old_pw:
-        current_user.password = new_pw
-        db.session.commit()
-        flash('Nywila imebadilishwa kikamilifu!')
-    else:
-        flash('Nywila ya zamani si sahihi!')
-    return redirect(url_for('admin_dashboard'))
+    return render_template('admin.html', properties=properties, inquiries=inquiries)
 
 @app.route('/upload', methods=['POST'])
 @login_required
@@ -104,6 +91,29 @@ def upload():
                         image_url=upload_result['secure_url'])
     db.session.add(new_item)
     db.session.commit()
+    flash('Kiwanja kimewekwa hewani!')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/delete_property/<int:id>', methods=['POST'])
+@login_required
+def delete_property(id):
+    prop = Property.query.get_or_404(id)
+    db.session.delete(prop)
+    db.session.commit()
+    flash('Kiwanja kimeondolewa kikamilifu.')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    old_pw = request.form.get('old_password')
+    new_pw = request.form.get('new_password')
+    if current_user.password == old_pw:
+        current_user.password = new_pw
+        db.session.commit()
+        flash('Nywila imebadilishwa!')
+    else:
+        flash('Nywila ya zamani si sahihi!')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/inquire/<int:id>', methods=['POST'])
@@ -112,7 +122,6 @@ def inquire(id):
     new_inq = Inquiry(client_phone=request.form.get('phone'), property_name=item.title)
     db.session.add(new_inq)
     db.session.commit()
-    flash('Asante! Tutakupigia kupitia ' + request.form.get('phone'))
     return redirect(url_for('index'))
 
 @app.route('/logout')
