@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-6 md:p-12">
+    <div class="max-w-6xl mx-auto flex justify-between items-center mb-10">
+        <h1 class="text-[#0046AD] font-black italic text-xl">DASHBOARD</h1>
+        <a href="/logout" class="bg-red-500 text-white px-6 py-2 rounded-lg text-xs font-bold uppercase">Logout</a>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-[#0046AD] font-black text-xs uppercase mb-6">Weka Kiwanja Kipya</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <input type="text" name="name" placeholder="Jina la Kiwanja (Mf: Kiwanja Goba)" required class="w-full border p-4 rounded-xl text-sm">
+                <input type="text" name="loc" placeholder="Eneo (Mf: Mbezi Luis)" required class="w-full border p-4 rounded-xl text-sm">
+                <input type="number" name="price" placeholder="Bei (TZS)" required class="w-full border p-4 rounded-xl text-sm">
+                <textarea name="desc" placeholder="Sifa za Kiwanja" class="w-full border p-4 rounded-xl text-sm h-24"></textarea>
+                <input type="file" name="file" required class="w-full text-xs">
+                <button class="w-full bg-[#0046AD] text-white py-4 rounded-xl font-black uppercase text-xs">Publish Plot</button>
+            </form>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-slate-400 font-black text-xs uppercase mb-6">Wateja Walioomba (Inquiries)</h2>
+            <div class="space-y-4">
+                {% for i in inquiries %}
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-black text-sm text-[#0046AD]">{{ i.client_phone }}</p>
+                    <p class="text-[10px] uppercase font-bold text-slate-500 mt-1">Ametaka: {{ i.property_name }}</p>
+                    <p class="text-[8px] text-slate-400 mt-2">{{ i.date_created.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
