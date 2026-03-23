@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-sm bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center">
+        <h1 class="text-[#0046AD] font-black italic text-2xl mb-8">STAFF PORTAL</h1>
+        <form action="/login" method="POST" class="space-y-4">
+            <input type="text" name="username" placeholder="Username" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm outline-none">
+            <input type="password" name="password" placeholder="Password" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm outline-none">
+            <button class="w-full bg-[#0046AD] text-white font-black py-4 rounded-xl uppercase text-xs tracking-widest">Login</button>
+        </form>
+    </div>
+</body>
+</html>
