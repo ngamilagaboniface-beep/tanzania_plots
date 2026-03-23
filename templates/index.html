@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANZANIA PLOTS COMPANY LIMITED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        .brand-blue { color: #0046AD; }
+        .bg-brand-blue { background-color: #0046AD; }
+        .brand-yellow { color: #FFD700; }
+        .bg-brand-yellow { background-color: #FFD700; }
+    </style>
+</head>
+<body class="bg-white text-slate-800">
+
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-slate-50 z-[100] transform -translate-x-full p-6 border-r border-slate-200 shadow-xl">
+        <button onclick="toggleMenu()" class="text-slate-400 mb-8 font-bold text-xs uppercase">✕ Funga</button>
+        <div class="mb-8">
+            <p class="brand-blue text-[10px] font-black uppercase mb-2">Ofisi Yetu</p>
+            <p class="text-xs font-bold italic">Mbezi Luis, Goba Rd</p>
+            <p class="text-[10px] text-slate-500">64VG+4P Dar es Salaam</p>
+        </div>
+        <p class="brand-blue text-[10px] font-black uppercase mb-4">Maeneo</p>
+        <div class="space-y-3 mb-10">
+            <a href="/" class="block text-sm font-semibold hover:brand-blue">Viwanja Vyote</a>
+            {% for loc in locations %}
+            <a href="/?location={{ loc }}" class="block text-sm hover:brand-blue">{{ loc }}</a>
+            {% endfor %}
+        </div>
+        <a href="/login" class="block w-full bg-slate-200 py-3 rounded-lg text-center text-[10px] font-black uppercase brand-blue">🔐 Staff Login</a>
+    </div>
+
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <button onclick="toggleMenu()" class="bg-brand-blue text-white px-4 py-2 rounded-md text-[10px] font-black uppercase">Menu</button>
+            <div class="text-center">
+                <h1 class="brand-blue font-black italic text-xl leading-none">TANZANIA PLOTS</h1>
+                <span class="bg-brand-yellow brand-blue text-[7px] font-black px-2 uppercase tracking-widest">Company Limited</span>
+            </div>
+            <a href="https://wa.me/255658200422" class="bg-emerald-500 text-white px-3 py-2 rounded-md text-[10px] font-black uppercase">WhatsApp</a>
+        </div>
+    </header>
+
+    <section class="bg-slate-50 py-12 px-4 text-center border-b border-slate-100">
+        <h2 class="brand-blue text-2xl md:text-4xl font-black uppercase tracking-tighter">Viwanja Bora Dar es Salaam</h2>
+        <p class="text-slate-500 text-[10px] font-bold uppercase mt-2 tracking-widest">Mbezi Luis | Goba Road | Simu: 0658200422</p>
+    </section>
+
+    <main class="container mx-auto px-4 py-10">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}<div class="bg-brand-blue text-white p-4 rounded-lg mb-8 text-center text-xs font-bold shadow-md">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for p in properties %}
+            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-lg transition">
+                <img src="{{ p.image_url }}" class="w-full h-56 object-cover">
+                <div class="p-6">
+                    <span class="bg-brand-yellow brand-blue text-[8px] font-black px-2 py-1 rounded uppercase">{{ p.location }}</span>
+                    <h3 class="text-lg font-black brand-blue mt-3">{{ p.title }}</h3>
+                    <p class="text-slate-500 text-xs mt-2 italic">{{ p.features }}</p>
+                    <p class="text-xl font-black brand-blue mt-4">{{ "{:,.0f}".format(p.price) }} <span class="text-[10px]">TZS</span></p>
+                    <form action="/inquire/{{ p.id }}" method="POST" class="mt-6 flex gap-2">
+                        <input type="text" name="phone" placeholder="Namba ya simu" required class="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-lg text-xs outline-none">
+                        <button class="bg-brand-yellow brand-blue px-4 rounded-lg text-[9px] font-black uppercase shadow-sm">Nihitaji</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer class="mt-20 py-10 border-t border-slate-100 text-center">
+        <p class="brand-blue font-black italic text-sm">TANZANIA PLOTS COMPANY LIMITED</p>
+        <p class="text-slate-400 text-[8px] uppercase mt-2">📍 Mbezi Luis, Goba Rd | 📞 0658200422 | 🌍 64VG+4P</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const s = document.getElementById('sidebar');
+            s.style.transform = s.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+    </script>
+</body>
+</html>
