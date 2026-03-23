@@ -7,9 +7,9 @@ import cloudinary
 import cloudinary.uploader
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TZ_PLOTS_MASTER_2026')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TZ_PLOTS_SECURE_2026')
 
-# Cloudinary Setup (Set these in your Render Environment Variables)
+# Cloudinary Setup
 cloudinary.config(
   cloud_name = os.environ.get('CLOUDINARY_NAME'),
   api_key = os.environ.get('CLOUDINARY_API_KEY'),
@@ -25,7 +25,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# --- MODELS ---
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -48,11 +47,12 @@ class Inquiry(db.Model):
 @login_manager.user_loader
 def load_user(id): return User.query.get(int(id))
 
-# Initialize Database & Default Admin
+# --- INITIALIZATION ---
 with app.app_context():
     db.create_all()
+    # Updated default password to "tz plots"
     if not User.query.filter_by(username='admin').first():
-        db.session.add(User(username='admin', password='TZ_Plots_Admin_2026'))
+        db.session.add(User(username='admin', password='tz plots'))
         db.session.commit()
 
 # --- ROUTES ---
@@ -71,7 +71,7 @@ def login():
         if user and user.password == request.form.get('password'):
             login_user(user)
             return redirect(url_for('admin_dashboard'))
-        flash('Taarifa si sahihi!')
+        flash('Namba au Nywila sio sahihi')
     return render_template('login.html')
 
 @app.route('/admin')
@@ -80,18 +80,28 @@ def admin_dashboard():
     inquiries = Inquiry.query.order_by(Inquiry.date_created.desc()).all()
     return render_template('admin.html', inquiries=inquiries)
 
+@app.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    old_pw = request.form.get('old_password')
+    new_pw = request.form.get('new_password')
+    
+    if current_user.password == old_pw:
+        current_user.password = new_pw
+        db.session.commit()
+        flash('Nywila imebadilishwa kikamilifu!')
+    else:
+        flash('Nywila ya zamani si sahihi!')
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
     file = request.files['file']
     upload_result = cloudinary.uploader.upload(file)
-    new_item = Property(
-        location=request.form.get('loc'), 
-        title=request.form.get('name'), 
-        price=float(request.form.get('price')), 
-        features=request.form.get('desc'), 
-        image_url=upload_result['secure_url']
-    )
+    new_item = Property(location=request.form.get('loc'), title=request.form.get('name'), 
+                        price=float(request.form.get('price')), features=request.form.get('desc'), 
+                        image_url=upload_result['secure_url'])
     db.session.add(new_item)
     db.session.commit()
     return redirect(url_for('admin_dashboard'))
