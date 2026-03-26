@@ -2,74 +2,68 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | Tanzania Plots</title>
+    <title>Admin Panel | TZ Plots</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 p-6 md:p-12">
-    <div class="max-w-6xl mx-auto flex justify-between items-center mb-10">
-        <h1 class="text-[#0046AD] font-black italic text-xl">DASHBOARD</h1>
-        <div class="flex gap-4">
-            <a href="/" class="text-[10px] font-bold uppercase text-slate-400 mt-2">View Site</a>
-            <a href="/logout" class="bg-red-500 text-white px-6 py-2 rounded-lg text-xs font-bold uppercase">Logout</a>
-        </div>
+    <div class="flex justify-between items-center mb-10">
+        <h1 class="text-slate-900 font-black text-xl italic">TZ PLOTS ADMIN</h1>
+        <a href="/logout" class="bg-red-500 text-white px-6 py-2 rounded-lg text-xs font-bold uppercase">Logout</a>
     </div>
 
     {% with messages = get_flashed_messages() %}
-        {% if messages %}<div class="max-w-6xl mx-auto bg-[#0046AD] text-white p-4 rounded-xl mb-10 text-center text-sm font-bold shadow-lg">{{ messages[0] }}</div>{% endif %}
+        {% if messages %}<div class="bg-blue-600 text-white p-4 rounded-xl mb-10 text-center font-bold text-sm">{{ messages[0] }}</div>{% endif %}
     {% endwith %}
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-            <h2 class="text-[#0046AD] font-black text-xs uppercase mb-6">Weka Kiwanja Kipya</h2>
-            <form action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
-                <input type="text" name="name" placeholder="Jina la Kiwanja" required class="w-full border p-4 rounded-xl text-sm outline-none focus:border-[#0046AD]">
-                <input type="text" name="loc" placeholder="Eneo (Mf: Goba)" required class="w-full border p-4 rounded-xl text-sm outline-none focus:border-[#0046AD]">
-                <input type="number" name="price" placeholder="Bei (TZS)" required class="w-full border p-4 rounded-xl text-sm outline-none focus:border-[#0046AD]">
-                <textarea name="desc" placeholder="Sifa za Kiwanja" class="w-full border p-4 rounded-xl text-sm h-24 outline-none"></textarea>
-                <input type="file" name="file" required class="w-full text-xs">
-                <button class="w-full bg-[#0046AD] text-white py-4 rounded-xl font-black uppercase text-xs hover:bg-[#FFD700] hover:text-[#0046AD] transition shadow-md">Publish Plot</button>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border">
+            <h2 class="text-blue-900 font-black text-xs uppercase mb-6 italic">Weka Kiwanja Kipya</h2>
+            <form action="/admin/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <input type="text" name="title" placeholder="Jina la Mradi" required class="w-full border p-4 rounded-xl text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="location" placeholder="Eneo" required class="w-full border p-4 rounded-xl text-sm">
+                    <select name="type" class="border p-4 rounded-xl text-sm"><option>Kiwanja</option><option>Nyumba</option><option>Shamba</option></select>
+                </div>
+                <input type="number" name="price" placeholder="Bei (TZS)" required class="w-full border p-4 rounded-xl text-sm">
+                <input type="text" name="features" placeholder="Sifa (Mf: 20x20, Maji yapo)" class="w-full border p-4 rounded-xl text-sm">
+                <input type="file" name="file" required class="text-xs">
+                <button class="w-full bg-blue-900 text-white py-4 rounded-xl font-black uppercase text-xs">Publish Plot</button>
             </form>
         </div>
 
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-            <h2 class="text-slate-400 font-black text-xs uppercase mb-6">Wateja Walioomba (Inquiries)</h2>
-            <div class="space-y-4 h-[450px] overflow-y-auto pr-2">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border">
+            <h2 class="text-slate-400 font-black text-xs uppercase mb-6">Wateja Walioandika</h2>
+            <div class="space-y-4 h-[400px] overflow-y-auto pr-2">
                 {% for i in inquiries %}
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <p class="font-black text-sm text-[#0046AD]">{{ i.client_phone }}</p>
-                    <p class="text-[10px] uppercase font-bold text-slate-500 mt-1">Plot: {{ i.property_name }}</p>
-                    <p class="text-[8px] text-slate-400 mt-2">{{ i.date_created.strftime('%d %b, %H:%M') }}</p>
+                <div class="bg-slate-50 p-4 rounded-xl border">
+                    <p class="font-black text-sm text-blue-900">{{ i.client_name }} - {{ i.client_phone }}</p>
+                    <p class="text-xs text-slate-500 mt-2 italic">"{{ i.message }}"</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto mt-12">
-        <h2 class="text-[#0046AD] font-black text-xs uppercase mb-6">Orodha ya Viwanja (Manage Plots)</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {% for p in properties %}
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <img src="{{ p.image_url }}" class="w-full h-32 object-cover rounded-xl mb-4">
-                <h3 class="font-black text-xs text-[#0046AD] truncate">{{ p.title }}</h3>
-                <p class="text-[10px] font-bold text-slate-400 mb-4">{{ p.location }}</p>
-                <form action="/delete_property/{{ p.id }}" method="POST" onsubmit="return confirm('Je, una uhakika unataka kufuta kiwanja hiki?');">
-                    <button class="w-full bg-red-50 text-red-500 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition">Futa Kiwanja</button>
-                </form>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="max-w-6xl mx-auto mt-12 pb-12">
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 lg:w-1/3">
-            <h2 class="text-red-500 font-black text-[10px] uppercase mb-4">Badili Nywila (Security)</h2>
-            <form action="/change_password" method="POST" class="space-y-3">
-                <input type="password" name="old_password" placeholder="Nywila ya Sasa" required class="w-full bg-slate-50 border p-3 rounded-xl text-xs outline-none">
-                <input type="password" name="new_password" placeholder="Nywila Mpya" required class="w-full bg-slate-50 border p-3 rounded-xl text-xs outline-none">
-                <button class="w-full border border-[#0046AD] text-[#0046AD] py-3 rounded-xl font-black uppercase text-[10px] hover:bg-[#0046AD] hover:text-white transition">Update Password</button>
+    <h2 class="text-blue-900 font-black text-xs uppercase mb-6">Orodha ya Viwanja (Plot Manager)</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        {% for p in properties %}
+        <div class="bg-white p-3 rounded-2xl border text-center">
+            <img src="{{ p.image_url }}" class="w-full h-24 object-cover rounded-xl mb-3">
+            <p class="text-[10px] font-black truncate">{{ p.title }}</p>
+            <form action="/admin/delete/{{ p.id }}" method="POST" onsubmit="return confirm('Futa kiwanja?');">
+                <button class="mt-2 text-red-500 text-[9px] font-bold uppercase border border-red-100 px-4 py-1 rounded-md hover:bg-red-500 hover:text-white transition">Ondoa / Futa</button>
             </form>
         </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white p-8 rounded-3xl border lg:w-1/3">
+        <h2 class="text-red-500 font-black text-[10px] uppercase mb-4">Security Settings</h2>
+        <form action="/admin/password" method="POST" class="space-y-3">
+            <input type="password" name="old_p" placeholder="Nywila ya Sasa" required class="w-full bg-slate-50 border p-3 rounded-xl text-xs">
+            <input type="password" name="new_p" placeholder="Nywila Mpya" required class="w-full bg-slate-50 border p-3 rounded-xl text-xs">
+            <button class="w-full border border-blue-900 text-blue-900 py-3 rounded-xl font-black text-[10px] uppercase hover:bg-blue-900 hover:text-white transition">Update Security</button>
+        </form>
     </div>
 </body>
 </html>
