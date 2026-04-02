@@ -2,29 +2,33 @@ import os
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.utils import secure_filename
 from datetime import datetime
-import cloudinary
-import cloudinary.uploader
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TZ_PLOTS_PRO_SECURE_2026')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'TANZANIA_PLOTS_2026')
 
-# Cloudinary Setup (For Picture Uploads)
-cloudinary.config(
-  cloud_name = os.environ.get('CLOUDINARY_NAME'),
-  api_key = os.environ.get('CLOUDINARY_API_KEY'),
-  api_secret = os.environ.get('CLOUDINARY_API_SECRET')
-)
-
+# --- CONFIGURATION ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tz_plots.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tanzania_plots.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit for multiple images
+
+# Upload Folder Setup
+UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True) 
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# --- DATABASE MODELS ---
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# --- MODELS ---
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -35,47 +39,56 @@ class Property(db.Model):
     property_type = db.Column(db.String(50)) 
     location = db.Column(db.String(100)) 
     title = db.Column(db.String(150))
+    description = db.Column(db.Text, default="Premium property in Dar es Salaam.") 
     price = db.Column(db.Float)
-    features = db.Column(db.String(200)) 
-    image_url = db.Column(db.String(500))
+    bedrooms = db.Column(db.Integer, default=0)
+    available_plots = db.Column(db.String(300), default="") 
+    image_urls = db.Column(db.Text) # Stores multiple URLs separated by commas
+    status = db.Column(db.String(20), default='Available') 
 
 class Inquiry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    client_name = db.Column(db.String(100))
-    client_phone = db.Column(db.String(20))
-    message = db.Column(db.Text)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    customer_name = db.Column(db.String(100))
+    customer_phone = db.Column(db.String(20))
+    selected_plots = db.Column(db.Text) 
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 @login_manager.user_loader
 def load_user(id): return User.query.get(int(id))
 
-# --- INITIALIZE DATABASE ---
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username='admin').first():
-        db.session.add(User(username='admin', password='admin_password')) # Change this immediately!
+        db.session.add(User(username='admin', password='password2026')) # Remember to change this password!
         db.session.commit()
 
-# --- PUBLIC ROUTES ---
+# --- ROUTES ---
 @app.route('/')
 def index():
     loc = request.args.get('location')
-    ptype = request.args.get('type')
     query = Property.query
     if loc: query = query.filter(Property.location.contains(loc))
-    if ptype: query = query.filter(Property.property_type == ptype)
     properties = query.order_by(Property.id.desc()).all()
     return render_template('index.html', properties=properties)
 
-@app.route('/contact', methods=['POST'])
-def contact():
-    new_inq = Inquiry(client_name=request.form.get('name'), client_phone=request.form.get('phone'), message=request.form.get('message'))
+@app.route('/property/<int:id>')
+def property_details(id):
+    p = Property.query.get_or_404(id)
+    images = p.image_urls.split(',') if p.image_urls else ["https://via.placeholder.com/800x600?text=No+Image"]
+    return render_template('details.html', p=p, images=images)
+
+@app.route('/send_inquiry', methods=['POST'])
+def send_inquiry():
+    new_inq = Inquiry(
+        customer_name=request.form.get('name'),
+        customer_phone=request.form.get('phone'),
+        selected_plots=request.form.get('cart_data') or request.form.get('property_title')
+    )
     db.session.add(new_inq)
     db.session.commit()
-    flash('Asante! Ombi lako limepokelewa. Tutakupigia hivi punde.')
+    flash('Inquiry Received! An agent will call you shortly.')
     return redirect(url_for('index'))
 
-# --- ADMIN ROUTES ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -83,27 +96,57 @@ def login():
         if user and user.password == request.form.get('password'):
             login_user(user)
             return redirect(url_for('admin_dashboard'))
-        flash('Namba au Nywila si sahihi.')
+        flash('Access Denied.')
     return render_template('login.html')
 
 @app.route('/admin')
 @login_required
 def admin_dashboard():
     properties = Property.query.order_by(Property.id.desc()).all()
-    inquiries = Inquiry.query.order_by(Inquiry.date_created.desc()).all()
+    inquiries = Inquiry.query.order_by(Inquiry.timestamp.desc()).all()
     return render_template('admin.html', properties=properties, inquiries=inquiries)
 
-@app.route('/admin/upload', methods=['POST'])
+@app.route('/admin/save', methods=['POST'])
 @login_required
-def upload():
-    file = request.files['file']
-    result = cloudinary.uploader.upload(file)
-    new_p = Property(title=request.form.get('title'), location=request.form.get('location'), 
-                     property_type=request.form.get('type'), price=float(request.form.get('price')), 
-                     features=request.form.get('features'), image_url=result['secure_url'])
-    db.session.add(new_p)
-    db.session.commit()
-    flash('Kiwanja kimewekwa hewani kikamilifu!')
+def save_property():
+    try:
+        p_id = request.form.get('property_id')
+        image_files = request.files.getlist('image_files')
+        uploaded_urls = []
+        
+        for file in image_files:
+            if file and file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                unique_name = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}_{filename}"
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_name))
+                uploaded_urls.append(f"/static/uploads/{unique_name}")
+
+        data = {
+            "title": request.form.get('title'),
+            "description": request.form.get('description'),
+            "location": request.form.get('location'),
+            "property_type": request.form.get('type'),
+            "price": float(request.form.get('price') or 0),
+            "bedrooms": int(request.form.get('bedrooms') or 0),
+            "available_plots": request.form.get('available_plots', ''),
+            "status": request.form.get('status')
+        }
+
+        if p_id:
+            p = Property.query.get(p_id)
+            for key, value in data.items(): setattr(p, key, value)
+            if uploaded_urls:
+                p.image_urls = ",".join(uploaded_urls)
+        else:
+            final_urls = ",".join(uploaded_urls) if uploaded_urls else "https://via.placeholder.com/600x400"
+            new_p = Property(**data, image_urls=final_urls)
+            db.session.add(new_p)
+        
+        db.session.commit()
+        flash("Property Saved Successfully!")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error: {str(e)}")
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete/<int:id>', methods=['POST'])
@@ -112,17 +155,6 @@ def delete(id):
     p = Property.query.get_or_404(id)
     db.session.delete(p)
     db.session.commit()
-    flash('Kiwanja kimefutwa.')
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/password', methods=['POST'])
-@login_required
-def change_pw():
-    if current_user.password == request.form.get('old_p'):
-        current_user.password = request.form.get('new_p')
-        db.session.commit()
-        flash('Nywila imebadilishwa!')
-    else: flash('Nywila ya zamani si sahihi.')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/logout')
@@ -131,4 +163,5 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
