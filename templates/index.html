@@ -8,13 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tanzania Plots | Verified Land & Properties in Dar es Salaam</title>
     <meta name="description" content="Find verified plots and houses for sale in Tanzania. Specializing in prime land in Goba, Mbezi, and Dar es Salaam with guaranteed title deeds.">
-    <meta name="keywords" content="Tanzania Plots, Real Estate Dar es Salaam, Buy Land Tanzania, Goba Plots, Mbezi Houses, Verified Land">
     
-    <meta property="og:title" content="Tanzania Plots | Verified Land Listings">
-    <meta property="og:description" content="Secure, verified, and professional land and property listings in Tanzania.">
-    <meta property="og:image" content="{{ url_for('static', filename='logo.png') }}">
-    <meta property="og:url" content="https://your-site-link.onrender.com">
-
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
@@ -92,18 +86,22 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {% for p in properties %}
+                {% set cover_image = p.image_urls.split(',')[0] if p.image_urls else 'https://via.placeholder.com/600' %}
+                
                 <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-500 group {{ 'sold-overlay' if p.status == 'Sold' }}">
-                    <div class="relative h-72">
-                        <img src="{{ p.image_url }}" class="w-full h-full object-cover">
+                    <a href="/property/{{ p.id }}" class="block relative h-72 cursor-pointer">
+                        <img src="{{ cover_image }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         <div class="absolute top-6 left-6 bg-white/95 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-900 shadow-xl border border-white">{{ p.property_type }}</div>
                         {% if p.status == 'Sold' %}
                         <div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
                             <span class="bg-red-600 text-white px-8 py-3 rounded-xl font-black text-xl uppercase tracking-tighter shadow-2xl rotate-[-5deg]">SOLD</span>
                         </div>
                         {% endif %}
-                    </div>
+                    </a>
                     <div class="p-8">
-                        <h3 class="text-xl font-bold text-slate-900 leading-tight mb-2">{{ p.title }}</h3>
+                        <a href="/property/{{ p.id }}" class="hover:text-brand-green transition">
+                            <h3 class="text-xl font-bold text-slate-900 leading-tight mb-2">{{ p.title }}</h3>
+                        </a>
                         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6 flex items-center gap-2">📍 {{ p.location }}</p>
                         
                         <div class="flex items-center gap-4 mb-8">
@@ -111,7 +109,7 @@
                         </div>
                         
                         {% if p.status == 'Available' %}
-                        <button onclick="addToCart('{{ p.title }}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-brand-green transition shadow-lg">Inquire Now</button>
+                        <button onclick="addToCart('{{ p.title }}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-brand-green transition shadow-lg">Quick Add</button>
                         {% else %}
                         <button disabled class="w-full bg-slate-100 text-slate-400 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Not Available</button>
                         {% endif %}
@@ -135,7 +133,7 @@
                     </div>
                     <div class="flex items-start gap-6">
                         <div class="w-12 h-12 bg-emerald-50 text-brand-green rounded-2xl flex items-center justify-center text-2xl">📍</div>
-                        <div><p class="font-bold text-slate-900">Goba Road</p><p class="text-slate-500 text-sm">Dar es Salaam, Tanzania (16103)</p></div>
+                        <div><p class="font-bold text-slate-900">Goba Road</p><p class="text-slate-500 text-sm">Dar es Salaam, Tanzania</p></div>
                     </div>
                 </div>
 
@@ -147,8 +145,7 @@
             </div>
             
             <div class="h-[400px] lg:h-auto bg-slate-100 grayscale hover:grayscale-0 transition duration-1000">
-                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126786.11181745422!2d39.14152591640625!3d-6.7618037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4f23b3780c13%3A0x6b77c1d76326ed2a!2sDar%20es%20Salaam%2C%20Tanzania!5e0!3m2!1sen!2sus!4v1710000000000!5m2!1sen!2sus" 
-                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126841.48800163332!2d39.1417105234582!3d-6.795123996766488!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c490a06806509%3A0xc07a2168582d92!2sDar%20es%20Salaam!5e0!3m2!1sen!2stz!4v1710000000000!5m2!1sen!2stz4" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
