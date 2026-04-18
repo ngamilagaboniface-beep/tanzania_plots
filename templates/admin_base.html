@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanzania Plots Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="{{ url_for('index') }}" class="code-logo">
+                <span class="t-container">T</span>
+                <span class="p-container">P
+                    <i class="fas fa-home house-shape"></i>
+                    <div class="map-shape">
+                        <div class="map-flag">
+                            <div class="flag-blue"></div>
+                            <div class="flag-white"></div>
+                            <div class="flag-red"></div>
+                        </div>
+                        <div class="map-block"></div>
+                        <div class="map-block"></div>
+                        <div class="map-block"></div>
+                    </div>
+                </span>
+                <div class="logo-info">
+                    <span class="company-name-text">TANZANIA PLOTS</span>
+                    <div class="company-name-line"></div>
+                    <span class="company-suffix-text">COMPANY LIMITED</span>
+                    <span class="tagline-text">ADMIN PANEL</span>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('admin_logout') }}" class="btn-danger p-2"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="admin-main-container">
+        <aside class="admin-sidebar">
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_plots') }}"><i class="fas fa-map-marker-alt"></i> Manage Plots</a></li>
+                <li><a href="{{ url_for('admin_change_password') }}"><i class="fas fa-key"></i> Change Password</a></li>
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-globe"></i> View Public Site</a></li>
+            </ul>
+        </aside>
+        <section class="admin-content">
+            {% block admin_content %}{% endblock %}
+        </section>
+    </main>
+
+    <footer class="text-center">
+        <p>&copy; 2024 {{ company_name }} Admin. All rights reserved.</p>
+    </footer>
+</body>
+</html>
