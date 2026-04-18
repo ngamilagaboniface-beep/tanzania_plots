@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanzania Plots Company Limited</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="{{ url_for('index') }}" class="code-logo">
+                <span class="t-container">T</span>
+                <span class="p-container">P
+                    <i class="fas fa-home house-shape"></i>
+                    <div class="map-shape">
+                        <div class="map-flag">
+                            <div class="flag-blue"></div>
+                            <div class="flag-white"></div>
+                            <div class="flag-red"></div>
+                        </div>
+                        <div class="map-block"></div>
+                        <div class="map-block"></div>
+                        <div class="map-block"></div>
+                    </div>
+                </span>
+                <div class="logo-info">
+                    <span class="company-name-text">TANZANIA PLOTS</span>
+                    <div class="company-name-line"></div>
+                    <span class="company-suffix-text">COMPANY LIMITED</span>
+                    <span class="tagline-text">OWN LAND, BUILD YOUR LEGACY</span>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('properties') }}">Properties</a></li>
+                    <li><a href="{{ url_for('admin_login') }}">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="main-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center">
+        <p>&copy; 2024 {{ company_name }}. All rights reserved.</p>
+        <p>Call us: {{ phone }} | Email: {{ email }}</p>
+    </footer>
+</body>
+</html>
