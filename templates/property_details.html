@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="detail-container">
+        <h1>{{ plot.title }}</h1>
+        <p class="plot-location">📍 {{ plot.location }} | 📐 {{ plot.sqm_size }} Sq.m. | <span class="badge badge-info">{{ plot.status }}</span></p>
+
+        <h2>TZS {{ plot.price|format(',.0f') }}</h2>
+
+        <div class="plot-description">
+            <p>{{ plot.description }}</p>
+        </div>
+
+        {% if plot.images %}
+            <h3>Gallery</h3>
+            <div class="image-gallery">
+                {% for image in plot.images %}
+                    <img src="{{ image.url }}" alt="Gallery Image" class="detail-gallery-image">
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="mt-2">
+            <h3>Contact Us</h3>
+            <p>For inquiries, please call us at {{ phone }} or email {{ email }}. Mention plot ID: {{ plot.id }}</p>
+        </div>
+    </div>
+{% endblock %}
