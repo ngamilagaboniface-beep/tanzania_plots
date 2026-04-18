@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Available Plots</h1>
+    <p>Browse through our extensive list of available plots. Find the perfect location for your dream home or next investment.</p>
+
+    <div class="plots-grid">
+        {% for plot in plots %}
+            <div class="plot-card">
+                {% if plot.images %}
+                    <img src="{{ plot.images[0].url }}" alt="{{ plot.title }}" class="plot-card-image" style="width:100%; height:200px; object-fit:cover;">
+                {% else %}
+                    <div class="plot-image-placeholder"><i class="fas fa-map-marker-alt fa-3x"></i></div>
+                {% endif %}
+                <div class="plot-details">
+                    <div class="plot-title">{{ plot.title }}</div>
+                    <div class="plot-location">{{ plot.location }}</div>
+                    <div class="plot-price">TZS {{ plot.price|format(',.0f') }}</div>
+                    <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn-detail">View Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
