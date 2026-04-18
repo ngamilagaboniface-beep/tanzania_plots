@@ -1,0 +1,16 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+    <h1>Admin Dashboard</h1>
+    <p>Welcome to your control panel. Use the sidebar to manage plots or change your password.</p>
+    
+    <div class="d-flex gap-2">
+        <div class="card p-2 bg-white text-center w-50" style="border: 1px solid #ddd; border-radius: 5px;">
+            <h3>Total Plots</h3>
+            <p class="h1 text-green">{{ plots_count }}</p>
+        </div>
+        <div class="card p-2 bg-white text-center w-50" style="border: 1px solid #ddd; border-radius: 5px;">
+            <h3>Admin Users</h3>
+            <p class="h1 text-blue">{{ users_count }}</p>
+        </div>
+    </div>
+{% endblock %}
