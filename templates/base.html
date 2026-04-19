@@ -1,41 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Tanzania Plots</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanzania Plots | Own Land, Build Your Legacy</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+
     <header>
-        <a href="{{ url_for('index') }}" class="logo-box">
-            <div class="logo-icon">
-                <span class="t-blue">T</span><span class="p-red">P</span>
-                <i class="fa-solid fa-house house-roof"></i>
-            </div>
-            <div class="logo-text">
-                <span class="company-name">TANZANIA PLOTS</span>
-                <span class="tagline">OWN LAND, BUILD YOUR LEGACY</span>
-            </div>
-        </a>
-        <nav class="nav-links">
-            <a href="{{ url_for('index') }}">HOME</a>
-            <a href="{{ url_for('properties') }}">PROPERTIES</a>
-            <a href="{{ url_for('admin_login') }}">ADMIN</a>
-        </nav>
+        <div class="container header-flex">
+            <a href="{{ url_for('index') }}" class="logo-container">
+                <div class="logo-letters">
+                    <span class="letter-t">T</span>
+                    <span class="letter-p">P
+                        <i class="fa-solid fa-house house-icon"></i>
+                    </span>
+                </div>
+                <div class="logo-text-block">
+                    <span class="brand-name">TANZANIA PLOTS</span>
+                    <span class="brand-tagline">OWN LAND, BUILD YOUR LEGACY</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}">HOME</a>
+                <a href="{{ url_for('properties') }}">PROPERTIES</a>
+                {% if session.get('admin_id') %}
+                    <a href="{{ url_for('admin_dashboard') }}" style="color: var(--primary-red);">DASHBOARD</a>
+                    <a href="{{ url_for('admin_logout') }}">LOGOUT</a>
+                {% else %}
+                    <a href="{{ url_for('admin_login') }}">ADMIN</a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
 
-    <div class="container" style="max-width: 1200px; margin: auto; padding: 20px;">
+    <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
-            {% for cat, msg in messages %}
-              <div style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background: {% if cat=='success' %}#d4edda{% else %}#f8d7da{% endif %};">
-                {{ msg }}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
               </div>
             {% endfor %}
           {% endif %}
         {% endwith %}
-
-        {% block content %}{% endblock %}
     </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <h3>Tanzania Plots Co. Ltd</h3>
+                <p>We provide verified and surveyed plots for your future home and investment.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <ul style="list-style: none;">
+                    <li><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">Home</a></li>
+                    <li><a href="{{ url_for('properties') }}" style="color: white; text-decoration: none;">Available Plots</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Contact Us</h3>
+                <p><i class="fa fa-phone"></i> {{ phone }}</p>
+                <p><i class="fa fa-envelope"></i> {{ email }}</p>
+                <p><i class="fa fa-location-dot"></i> Dar es Salaam, Tanzania</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Tanzania Plots Company Limited. All Rights Reserved.
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+
 </body>
 </html>
