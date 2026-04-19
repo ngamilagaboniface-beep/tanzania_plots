@@ -1,57 +1,20 @@
-{% extends "admin_base.html" %}
-{% block admin_content %}
-    <h1>{{ title }}</h1>
-
-    <form method="POST" action="" enctype="multipart/form-data">
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container" style="max-width:600px">
+    <h2>{{ title }}</h2>
+    <form method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        
-        <div class="form-group">
-            {{ form.title.label(class="form-label") }}
-            {{ form.title(class="form-control") }}
+        <label>Title</label>{{ form.title() }}
+        <div style="display:flex; gap:10px">
+            <div style="flex:1"><label>Price (TZS)</label>{{ form.price() }}</div>
+            <div style="flex:1"><label>Sqm</label>{{ form.sqm_size() }}</div>
         </div>
-        <div class="form-group">
-            {{ form.description.label(class="form-label") }}
-            {{ form.description(class="form-control", rows=6) }}
-        </div>
-        <div class="form-group d-flex gap-2">
-            <div class="w-50">
-                {{ form.price.label(class="form-label") }}
-                {{ form.price(class="form-control") }}
-            </div>
-            <div class="w-50">
-                {{ form.sqm_size.label(class="form-label") }}
-                {{ form.sqm_size(class="form-control") }}
-            </div>
-        </div>
-        <div class="form-group d-flex gap-2">
-            <div class="w-50">
-                {{ form.location.label(class="form-label") }}
-                {{ form.location(class="form-control") }}
-            </div>
-            <div class="w-50">
-                {{ form.status.label(class="form-label") }}
-                {{ form.status(class="form-control") }}
-            </div>
-        </div>
-        <div class="form-group">
-            {{ form.images.label(class="form-label") }}
-            {{ form.images(class="form-control") }}
-            <p class="help-block" style="color:#777; font-size:0.8rem;">You can select multiple files at once.</p>
-        </div>
-
-        {% if plot and plot.images %}
-            <h3>Current Images</h3>
-            <div class="image-gallery d-flex gap-1">
-                {% for image in plot.images %}
-                    <img src="{{ image.url }}" alt="Gallery Image" class="detail-gallery-image" style="width:100px; height:100px;">
-                {% endfor %}
-            </div>
-            <p class="help-block">Images are currently managed by adding new ones and deleting the entire plot to remove them all. Full image management is a future feature.</p>
-        {% endif %}
-
-        <div class="form-group d-flex justify-content-center">
-            {{ form.submit(class="btn btn-primary") }}
-        </div>
-        <p class="text-center"><a href="{{ url_for('admin_plots') }}"><i class="fas fa-arrow-left"></i> Cancel and Back</a></p>
+        <label>Location</label>{{ form.location() }}
+        <label>Status</label>{{ form.status() }}
+        <label>Description</label>{{ form.description(rows=4) }}
+        <label>Images</label>
+        <input type="file" name="images" multiple>
+        <button type="submit" class="btn btn-blue" style="width:100%; margin-top:20px">Save Property</button>
     </form>
+</div>
 {% endblock %}
