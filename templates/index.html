@@ -1,24 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Welcome to Tanzania Plots</h1>
-    <p>Own your piece of paradise and build your legacy with Tanzania Plots Company Limited. We provide premium plots with clear titles and excellent investment potential.</p>
+<section style="padding: 40px 0; text-align: center;">
+    <h1 style="color: var(--brand-blue);">Premium Plots in Tanzania</h1>
+    <p style="color: #666;">Explore our latest listings</p>
 
-    <h2>Featured Plots</h2>
-    <div class="plots-grid">
+    <div class="slideshow-container">
         {% for plot in plots %}
-            <div class="plot-card">
-                {% if plot.images %}
-                    <img src="{{ plot.images[0].url }}" alt="{{ plot.title }}" class="plot-card-image" style="width:100%; height:200px; object-fit:cover;">
-                {% else %}
-                    <div class="plot-image-placeholder"><i class="fas fa-map-marker-alt fa-3x"></i></div>
-                {% endif %}
-                <div class="plot-details">
-                    <div class="plot-title">{{ plot.title }}</div>
-                    <div class="plot-location">{{ plot.location }}</div>
-                    <div class="plot-price">TZS {{ plot.price|format(',.0f') }}</div>
-                    <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn-detail">View Details</a>
-                </div>
+        <div class="mySlides fade">
+            {% if plot.images %}
+                <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" class="slide-img">
+            {% else %}
+                <div style="height:100%; background:#ddd; display:flex; align-items:center; justify-content:center;">No Image</div>
+            {% endif %}
+            <div class="slide-caption">
+                <h3>{{ plot.title }}</h3>
+                <p>{{ plot.location }} - TZS {{ "{:,.0f}".format(plot.price) }}</p>
+                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn-primary" style="text-decoration:none; background:white; color:var(--brand-blue);">View Details</a>
             </div>
+        </div>
         {% endfor %}
     </div>
+</section>
+
+<script>
+let slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  let slides = document.getElementsByClassName("mySlides");
+  for (let i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) {slideIndex = 1}    
+  slides[slideIndex-1].style.display = "block";  
+  setTimeout(showSlides, 4000); // Change image every 4 seconds
+}
+</script>
 {% endblock %}
