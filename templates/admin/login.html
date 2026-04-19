@@ -1,40 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanzania Plots Admin Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="light-gray-bg">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <div class="login-container d-flex align-items-center justify-content-center" style="height: 100vh;">
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <h2 class="text-center p-2">Admin Login</h2>
-            <div class="form-group">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control", placeholder="username") }}
-            </div>
-            <div class="form-group">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="password") }}
-            </div>
-            <div class="form-group d-flex justify-content-center">
-                {{ form.submit(class="btn btn-primary btn-block") }}
-            </div>
-            <p class="text-center"><a href="{{ url_for('index') }}"><i class="fas fa-arrow-left"></i> Back to Public Site</a></p>
-        </form>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container">
+    <h2 style="text-align:center; color:var(--primary-blue)">Admin Login</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <label>Username</label>
+        {{ form.username() }}
+        <label>Password</label>
+        {{ form.password() }}
+        <button type="submit" class="btn btn-blue" style="width:100%">Enter Dashboard</button>
+    </form>
+</div>
+{% endblock %}
