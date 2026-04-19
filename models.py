@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import current_app
 
 db = SQLAlchemy()
 
@@ -15,8 +14,9 @@ class Plot(db.Model):
     price = db.Column(db.Float, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     sqm_size = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.String(20), default='Available', nullable=False) # Available or Sold
-    images = db.relationship('PlotImage', backref='plot', lazy=True, cascade='all, delete-orphan')
+    status = db.Column(db.String(20), default='Available', nullable=False)
+    # The 'joined' setting fixes the specific error you saw
+    images = db.relationship('PlotImage', backref='plot', lazy='joined', cascade='all, delete-orphan')
 
 class PlotImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
