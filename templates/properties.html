@@ -1,23 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Available Plots</h1>
-    <p>Browse through our extensive list of available plots. Find the perfect location for your dream home or next investment.</p>
-
-    <div class="plots-grid">
-        {% for plot in plots %}
-            <div class="plot-card">
-                {% if plot.images %}
-                    <img src="{{ plot.images[0].url }}" alt="{{ plot.title }}" class="plot-card-image" style="width:100%; height:200px; object-fit:cover;">
-                {% else %}
-                    <div class="plot-image-placeholder"><i class="fas fa-map-marker-alt fa-3x"></i></div>
-                {% endif %}
-                <div class="plot-details">
-                    <div class="plot-title">{{ plot.title }}</div>
-                    <div class="plot-location">{{ plot.location }}</div>
-                    <div class="plot-price">TZS {{ plot.price|format(',.0f') }}</div>
-                    <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn-detail">View Details</a>
-                </div>
-            </div>
-        {% endfor %}
+<h2 style="color: var(--primary-blue); margin-top: 20px;">All Available Properties</h2>
+<div class="property-grid">
+    {% for plot in plots %}
+    <div class="card">
+        {% if plot.images %}
+            <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" alt="Plot Image">
+        {% else %}
+            <div style="height:200px; background:#ddd; display:flex; align-items:center; justify-content:center;">No Image</div>
+        {% endif %}
+        <div class="card-content">
+            <h3>{{ plot.title }}</h3>
+            <p><i class="fa fa-location-dot"></i> {{ plot.location }}</p>
+            <p>Size: {{ plot.sqm_size }} Sqm</p>
+            <p>Status: <strong style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %};">{{ plot.status }}</strong></p>
+            <p class="price-tag">TZS {{ "{:,.0f}".format(plot.price) }}</p>
+            <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="width:100%; text-align:center; margin-top:15px;">View Details</a>
+        </div>
     </div>
+    {% else %}
+    <p>No properties available right now.</p>
+    {% endfor %}
+</div>
 {% endblock %}
