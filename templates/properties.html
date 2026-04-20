@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 style="color: var(--primary-blue); margin-top: 20px;">All Available Properties</h2>
+<h2 style="color: var(--primary-blue); margin-top: 30px; text-align: center; font-size: 2rem;">All Available Properties</h2>
+
 <div class="property-grid">
     {% for plot in plots %}
     <div class="card">
         {% if plot.images %}
             <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" alt="Plot Image">
         {% else %}
-            <div style="height:200px; background:#ddd; display:flex; align-items:center; justify-content:center;">No Image</div>
+            <div style="height:250px; background:#ddd; display:flex; align-items:center; justify-content:center; color: #666; font-weight: bold;">
+                <i class="fa fa-image" style="margin-right: 8px;"></i> No Image
+            </div>
         {% endif %}
-        <div class="card-content">
+        <div class="card-body">
             <h3>{{ plot.title }}</h3>
-            <p><i class="fa fa-location-dot"></i> {{ plot.location }}</p>
-            <p>Size: {{ plot.sqm_size }} Sqm</p>
-            <p>Status: <strong style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %};">{{ plot.status }}</strong></p>
-            <p class="price-tag">TZS {{ "{:,.0f}".format(plot.price) }}</p>
-            <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="width:100%; text-align:center; margin-top:15px;">View Details</a>
+            <p><i class="fa fa-location-dot" style="color: var(--primary-blue);"></i> {{ plot.location }}</p>
+            <p><i class="fa fa-ruler-combined" style="color: var(--primary-blue);"></i> Size: {{ plot.sqm_size }} Sqm</p>
+            <p><strong>Status:</strong> <span style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %};">{{ plot.status }}</span></p>
+            <p class="price">TZS {{ "{:,.0f}".format(plot.price) }}</p>
+            <div style="margin-top: auto;">
+                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue">View Details</a>
+            </div>
         </div>
     </div>
     {% else %}
-    <p>No properties available right now.</p>
+    <p style="text-align: center; grid-column: 1 / -1; font-size: 1.2rem; color: #666; padding: 50px;">No properties available right now.</p>
     {% endfor %}
 </div>
 {% endblock %}
