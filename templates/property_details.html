@@ -1,39 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="margin-top: 40px; display: flex; flex-wrap: wrap; gap: 40px;">
-    
-    <div style="flex: 2; min-width: 300px;">
-        {% if plot.images %}
-            <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" 
-                 style="width: 100%; height: 450px; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-        {% else %}
-            <div style="width: 100%; height: 450px; background: #ddd; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 600; color: #666;">
-                <i class="fa fa-image" style="font-size: 3rem; margin-right: 10px;"></i> No Image Uploaded
+<div class="container" style="margin-top:40px;">
+    <div style="display:flex; flex-wrap:wrap; gap:30px;">
+        <div style="flex:2; min-width:300px;">
+            {% if plot.images %}
+                <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" style="width:100%; border-radius:15px; height:500px; object-fit:cover;">
+            {% endif %}
+            
+            <h3 style="margin-top:30px;">Location Map</h3>
+            <div class="map-container">
+                <iframe width="100%" height="100%" frameborder="0" style="border:0"
+                    src="https://www.google.com/maps?q={{ plot.location|urlencode }}&output=embed" allowfullscreen>
+                </iframe>
             </div>
-        {% endif %}
-    </div>
-
-    <div style="flex: 1; min-width: 320px; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 5px solid var(--primary-blue);">
-        <h1 style="color: var(--primary-blue); font-size: 2rem; line-height: 1.2;">{{ plot.title }}</h1>
-        <h2 style="color: var(--primary-red); font-size: 2.2rem; margin: 20px 0; font-weight: 800;">TZS {{ "{:,.0f}".format(plot.price) }}</h2>
-        
-        <div style="font-size: 1.1rem; color: #555; margin-bottom: 20px;">
-            <p style="margin-bottom: 10px;"><i class="fa fa-location-dot" style="color: var(--primary-blue); width: 25px;"></i> <strong>Location:</strong> {{ plot.location }}</p>
-            <p style="margin-bottom: 10px;"><i class="fa fa-ruler-combined" style="color: var(--primary-blue); width: 25px;"></i> <strong>Size:</strong> {{ plot.sqm_size }} Sqm</p>
-            <p style="margin-bottom: 10px;"><i class="fa fa-tag" style="color: var(--primary-blue); width: 25px;"></i> <strong>Status:</strong> 
-                <span style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %}; font-weight: bold;">{{ plot.status }}</span>
-            </p>
         </div>
 
-        <hr style="margin: 30px 0; border: 0; border-top: 2px solid #f0f0f0;">
-        
-        <h3 style="color: var(--dark); margin-bottom: 15px;">Property Description</h3>
-        <p style="white-space: pre-wrap; color: #666; line-height: 1.8;">{{ plot.description }}</p>
-        
-        <a href="https://wa.me/255658200422?text=Hello,%20I%20am%20interested%20in%20property:%20{{ plot.title|urlencode }}" 
-           target="_blank" class="btn btn-blue" style="width: 100%; text-align: center; margin-top: 30px; font-size: 1.1rem; padding: 15px;">
-            <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem; margin-right: 8px;"></i> Contact via WhatsApp
-        </a>
+        <div style="flex:1; min-width:300px; background:white; padding:30px; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.05);">
+            <h1 style="color:var(--primary-blue)">{{ plot.title }}</h1>
+            <div class="price" style="font-size:2rem;">TZS {{ "{:,.0f}".format(plot.price) }}</div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <p><strong><i class="fa fa-ruler"></i> Size:</strong> {{ plot.sqm_size }} Sqm</p>
+            <p><strong><i class="fa fa-info-circle"></i> Status:</strong> {{ plot.status }}</p>
+            <p style="margin-top:20px;">{{ plot.description }}</p>
+            
+            <a href="https://wa.me/255658200422" class="btn btn-blue" style="width:100%; margin-top:20px;">Contact via WhatsApp</a>
+        </div>
     </div>
 </div>
 {% endblock %}
