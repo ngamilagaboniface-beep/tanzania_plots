@@ -1,56 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class="slideshow">
-    {% for plot in plots[:5] %}
-        <div class="slide {% if loop.first %}active{% endif %}" 
-             {% if plot.images %}
-             style="background-image: url('{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}');"
-             {% else %}
-             style="background-color: #333;"
-             {% endif %}>
-            <div class="slide-info">
-                <h2>{{ plot.title }}</h2>
-                <p><i class="fa-solid fa-location-dot"></i> {{ plot.location }} | <strong>TZS {{ "{:,.0f}".format(plot.price) }}</strong></p>
-                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn" style="background: white; color: var(--primary-blue); margin-top:10px;">View Details</a>
-            </div>
-        </div>
-    {% endfor %}
+<div class="hero-bg">
+    <div>
+        <h1 style="font-size: 3rem; font-weight: 900;">Find Your Dream Plot in Tanzania</h1>
+        <p style="font-size: 1.2rem;">Secure, Verified, and Affordable Land Ownership</p>
+    </div>
 </div>
 
-<h2 style="text-align: center; color: var(--primary-blue); margin-top: 50px; font-size: 2rem;">Featured Properties</h2>
-<div class="property-grid">
-    {% for plot in plots[:6] %}
-    <div class="card">
-        {% if plot.images %}
-            <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" alt="Plot Image">
-        {% else %}
-            <div style="height:250px; background:#ddd; display:flex; align-items:center; justify-content:center; color: #666; font-weight: bold;">
-                <i class="fa fa-image" style="margin-right: 8px;"></i> No Image
+<div class="container">
+    <div class="slideshow">
+        {% for plot in plots[:5] %}
+            <div class="slide {% if loop.first %}active{% endif %}" 
+                 style="background-image: url('{{ url_for('static', filename='uploads/' + plot.images[0].filename if plot.images else '') }}');">
+                <div class="slide-info">
+                    <h2>{{ plot.title }}</h2>
+                    <p>TZS {{ "{:,.0f}".format(plot.price) }} | {{ plot.location }}</p>
+                </div>
             </div>
-        {% endif %}
-        <div class="card-body">
-            <h3>{{ plot.title }}</h3>
-            <p><i class="fa fa-location-dot" style="color: var(--primary-blue);"></i> {{ plot.location }}</p>
-            <p><i class="fa fa-ruler-combined" style="color: var(--primary-blue);"></i> Size: {{ plot.sqm_size }} Sqm</p>
-            <p class="price">TZS {{ "{:,.0f}".format(plot.price) }}</p>
-            <div style="margin-top: auto;">
-                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue">View Details</a>
+        {% endfor %}
+    </div>
+
+    <h2 style="margin-top:60px; text-align:center;">Featured Properties</h2>
+    <div class="property-grid">
+        {% for plot in plots %}
+        <div class="card">
+            {% if plot.images %}
+                <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}">
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ plot.title }}</h3>
+                <p style="color:#666;"><i class="fa fa-map-marker"></i> {{ plot.location }}</p>
+                <div class="price">TZS {{ "{:,.0f}".format(plot.price) }}</div>
+                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="width:100%">View Details</a>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 
 <script>
     let slides = document.querySelectorAll('.slide');
     let current = 0;
-    if(slides.length > 1) {
-        setInterval(() => {
-            slides[current].classList.remove('active');
-            current = (current + 1) % slides.length;
-            slides[current].classList.add('active');
-        }, 5000);
-    }
+    setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+    }, 5000);
 </script>
 {% endblock %}
