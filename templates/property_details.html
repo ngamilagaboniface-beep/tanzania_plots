@@ -1,27 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="detail-container">
-        <h1>{{ plot.title }}</h1>
-        <p class="plot-location">📍 {{ plot.location }} | 📐 {{ plot.sqm_size }} Sq.m. | <span class="badge badge-info">{{ plot.status }}</span></p>
-
-        <h2>TZS {{ plot.price|format(',.0f') }}</h2>
-
-        <div class="plot-description">
-            <p>{{ plot.description }}</p>
-        </div>
-
+<div style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 30px;">
+    <div style="flex: 2; min-width: 300px;">
         {% if plot.images %}
-            <h3>Gallery</h3>
-            <div class="image-gallery">
-                {% for image in plot.images %}
-                    <img src="{{ image.url }}" alt="Gallery Image" class="detail-gallery-image">
-                {% endfor %}
-            </div>
+            <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}" style="width: 100%; border-radius: 10px;">
+        {% else %}
+            <div style="height:400px; background:#ddd; display:flex; align-items:center; justify-content:center; border-radius: 10px;">No Image Available</div>
         {% endif %}
-        
-        <div class="mt-2">
-            <h3>Contact Us</h3>
-            <p>For inquiries, please call us at {{ phone }} or email {{ email }}. Mention plot ID: {{ plot.id }}</p>
-        </div>
     </div>
+    <div style="flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h1 style="color: var(--primary-blue);">{{ plot.title }}</h1>
+        <h2 style="color: var(--primary-red); margin: 15px 0;">TZS {{ "{:,.0f}".format(plot.price) }}</h2>
+        <p><strong>Location:</strong> {{ plot.location }}</p>
+        <p><strong>Size:</strong> {{ plot.sqm_size }} Sqm</p>
+        <p><strong>Status:</strong> {{ plot.status }}</p>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <h3>Description</h3>
+        <p style="white-space: pre-wrap;">{{ plot.description }}</p>
+        
+        <a href="https://wa.me/255658200422?text=Hello, I am interested in property ID: {{ plot.id }} - {{ plot.title }}" target="_blank" class="btn btn-blue" style="width: 100%; text-align: center; margin-top: 20px;">
+            <i class="fa-brands fa-whatsapp"></i> Contact via WhatsApp
+        </a>
+    </div>
+</div>
 {% endblock %}
