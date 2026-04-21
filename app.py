@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from models import db, Plot, PlotImage, User
 from forms import PlotForm, LoginForm, PasswordChangeForm
+from PIL import Image # NEW: Image compression library
 
 app = Flask(__name__)
 
@@ -16,24 +17,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# Initialize Database
 db.init_app(app)
 
-# AUTO-DB CREATION FOR RENDER
 with app.app_context():
     db.create_all()
-    # Create default admin if none exists
     if not User.query.filter_by(username='admin').first():
         default_admin = User(username='admin', password_hash=generate_password_hash('password'))
         db.session.add(default_admin)
         db.session.commit()
 
-# ==========================================
-# HELPER FUNCTIONS
-# ==========================================
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -45,7 +38,6 @@ def login_required(f):
 
 @app.context_processor
 def inject_globals():
-    # Makes these variables available in every HTML template automatically
     return dict(phone="0658 200 422", email="info@tanzaniaplots.co.tz")
 
 # ==========================================
@@ -58,7 +50,21 @@ def index():
 
 @app.route('/properties')
 def properties():
-    plots = Plot.query.order_by(Plot.id.desc()).all()
+    # NEW: Handle Search filtering from the Quick Search Box
+    query = Plot.query
+    
+    location = request.args.get('location')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    
+    if location:
+        query = query.filter(Plot.location.ilike(f'%{location}%'))
+    if min_price:
+        query = query.filter(Plot.price >= min_price)
+    if max_price:
+        query = query.filter(Plot.price <= max_price)
+        
+    plots = query.order_by(Plot.id.desc()).all()
     return render_template('properties.html', plots=plots)
 
 @app.route('/property/<int:plot_id>')
@@ -67,7 +73,7 @@ def property_detail(plot_id):
     return render_template('property_detail.html', plot=plot)
 
 # ==========================================
-# ADMIN AUTHENTICATION ROUTES
+# ADMIN ROUTES (Includes Fast Upload)
 # ==========================================
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -84,7 +90,6 @@ def admin_login():
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin_id', None)
-    flash('You have been logged out.', 'success')
     return redirect(url_for('index'))
 
 @app.route('/admin/change-password', methods=['GET', 'POST'])
@@ -101,9 +106,6 @@ def admin_change_password():
         flash('Old password incorrect.', 'error')
     return render_template('admin/change_password.html', form=form, title="Change Password")
 
-# ==========================================
-# ADMIN DASHBOARD & MANAGEMENT ROUTES
-# ==========================================
 @app.route('/admin')
 @login_required
 def admin_dashboard():
@@ -122,46 +124,38 @@ def admin_plot_create():
     form = PlotForm()
     if form.validate_on_submit():
         try:
-            # 1. Create the plot object
             plot = Plot(
-                title=form.title.data, 
-                description=form.description.data, 
-                price=form.price.data, 
-                location=form.location.data, 
-                sqm_size=form.sqm_size.data, 
-                status=form.status.data
+                title=form.title.data, description=form.description.data, 
+                price=form.price.data, location=form.location.data, 
+                sqm_size=form.sqm_size.data, status=form.status.data
             )
             db.session.add(plot)
-            
-            # 2. Flush to securely generate the Plot ID without a full commit
             db.session.flush() 
             
-            # 3. Handle multiple image uploads securely
             images = request.files.getlist('images')
             for image in images:
                 if image and image.filename != '':
                     filename = secure_filename(f"{plot.id}_{image.filename}")
                     image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                    image.save(image_path)
                     
-                    # Link image to the plot in the database
+                    # NEW: Open, Resize, and Compress the Image for insanely fast uploads
+                    img = Image.open(image)
+                    if img.mode in ("RGBA", "P"): img = img.convert("RGB")
+                    img.thumbnail((1024, 1024)) # Resizes to web-friendly dimensions
+                    img.save(image_path, optimize=True, quality=75) # Compresses file size by ~80%
+                    
                     db.session.add(PlotImage(filename=filename, plot_id=plot.id))
             
-            # 4. Commit everything together safely
             db.session.commit()
             flash('Property successfully published!', 'success')
             return redirect(url_for('admin_plots'))
             
         except Exception as e:
-            # Cancel the save if something crashes to prevent database corruption
             db.session.rollback() 
-            flash('Server error during upload. Please try again with smaller images.', 'error')
-            print(f"Upload Error: {str(e)}") # This prints to Render's event logs
+            flash('Server error during upload.', 'error')
+            print(f"Upload Error: {str(e)}") 
             
     return render_template('admin/plot_edit.html', form=form, title="Add Property")
 
-# ==========================================
-# APP EXECUTION
-# ==========================================
 if __name__ == '__main__':
     app.run(debug=True)
