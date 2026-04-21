@@ -4,3 +4,4 @@ Flask-WTF
 Flask-Migrate
 WTForms
 gunicorn
+Pillow
