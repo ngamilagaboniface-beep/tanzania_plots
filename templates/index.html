@@ -1,50 +1,130 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="hero-bg">
-    <div>
-        <h1 style="font-size: 3rem; font-weight: 900;">Find Your Dream Plot in Tanzania</h1>
-        <p style="font-size: 1.2rem;">Secure, Verified, and Affordable Land Ownership</p>
+
+<div class="hero-bg" style="background-image: linear-gradient(rgba(0, 51, 153, 0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'); height: auto; border-radius: 0;">
+    <div class="hero-split">
+        
+        <div class="hero-text">
+            <h1>Find Your Perfect Plot in <br><span>Tanzania Today</span></h1>
+            <p>Trusted real estate consultants specializing in premium land and plots across Tanzania. Your dream property awaits.</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="{{ url_for('properties') }}" class="btn" style="background: #facc15; color: var(--dark);">View Plots</a>
+                <a href="https://wa.me/255658200422" class="btn" style="border: 1px solid white; color: white;">Sell Your Land</a>
+            </div>
+            
+            <div class="hero-badges">
+                <div class="hero-badge"><i class="fa fa-chart-line"></i> Best Prices</div>
+                <div class="hero-badge"><i class="fa fa-shield-alt"></i> Verified</div>
+                <div class="hero-badge"><i class="fa fa-map-marker-alt"></i> Prime Locations</div>
+            </div>
+        </div>
+
+        <div class="search-box-container">
+            <h2>Quick Property Search</h2>
+            <form action="{{ url_for('properties') }}" method="GET">
+                <div class="search-form-group">
+                    <label>Location</label>
+                    <i class="fa fa-map-marker-alt"></i>
+                    <input type="text" name="location" class="search-input" placeholder="Enter location...">
+                </div>
+                
+                <div class="price-split">
+                    <div class="search-form-group" style="flex:1;">
+                        <label>Min Price (TZS)</label>
+                        <input type="number" name="min_price" class="search-input" placeholder="e.g. 10000000">
+                    </div>
+                    <div class="search-form-group" style="flex:1;">
+                        <label>Max Price (TZS)</label>
+                        <input type="number" name="max_price" class="search-input" placeholder="e.g. 100000000">
+                    </div>
+                </div>
+
+                <div class="search-form-group">
+                    <label>Property Type</label>
+                    <select class="search-input" style="padding-left: 15px;">
+                        <option value="">All Types</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Agricultural">Agricultural</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn" style="background: var(--primary-blue); color: white; width: 100%; margin-top: 10px;">
+                    <i class="fa fa-search"></i> Search Properties
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="slideshow">
-        {% for plot in plots[:5] %}
-            <div class="slide {% if loop.first %}active{% endif %}" 
-                 style="background-image: url('{{ url_for('static', filename='uploads/' + plot.images[0].filename if plot.images else '') }}');">
-                <div class="slide-info">
-                    <h2>{{ plot.title }}</h2>
-                    <p>TZS {{ "{:,.0f}".format(plot.price) }} | {{ plot.location }}</p>
-                </div>
-            </div>
-        {% endfor %}
+    <div style="text-align: center; margin-top: 80px; margin-bottom: 40px;">
+        <h2 style="font-size: 2.5rem; color: var(--dark); margin-bottom: 10px;">Featured Properties</h2>
+        <p style="color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Discover our handpicked selection of premium plots and land available across Tanzania.</p>
     </div>
 
-    <h2 style="margin-top:60px; text-align:center;">Featured Properties</h2>
     <div class="property-grid">
-        {% for plot in plots %}
+        {% for plot in plots[:3] %}
         <div class="card">
+            <div class="badge-featured">Featured</div>
+            <div class="heart-icon"><i class="fa fa-heart"></i></div>
+            
             {% if plot.images %}
                 <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}">
             {% endif %}
+            
             <div class="card-body">
-                <h3>{{ plot.title }}</h3>
-                <p style="color:#666;"><i class="fa fa-map-marker"></i> {{ plot.location }}</p>
-                <div class="price">TZS {{ "{:,.0f}".format(plot.price) }}</div>
-                <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="width:100%">View Details</a>
+                <h3 style="color: var(--dark);">{{ plot.title }}</h3>
+                <p style="color:#666; font-size: 0.9rem; margin-bottom: 15px;"><i class="fa fa-map-marker-alt"></i> {{ plot.location }}</p>
+                
+                <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #555;">
+                    <span><i class="fa fa-square"></i> {{ plot.sqm_size }} sqm</span>
+                    <span style="color: var(--primary-blue);"><i class="fa fa-tag"></i> {{ plot.status }}</span>
+                </div>
+
+                <div class="card-footer">
+                    <div class="price" style="margin: 0; font-size: 1.2rem;">TZS {{ "{:,.0f}".format(plot.price) }}</div>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="padding: 10px 15px; border-radius: 8px;">View Details</a>
+                        <a href="https://wa.me/255658200422" class="phone-btn"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
-</div>
 
-<script>
-    let slides = document.querySelectorAll('.slide');
-    let current = 0;
-    setInterval(() => {
-        slides[current].classList.remove('active');
-        current = (current + 1) % slides.length;
-        slides[current].classList.add('active');
-    }, 5000);
-</script>
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-shield-alt"></i></div>
+            <h3>Verified Properties</h3>
+            <p>All our plots undergo thorough verification to ensure legal compliance and authenticity.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-users"></i></div>
+            <h3>Expert Team</h3>
+            <p>Our experienced real estate consultants provide personalized service and expert guidance.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-chart-line"></i></div>
+            <h3>Best Prices</h3>
+            <p>We offer competitive pricing and help you get the best value for your investment.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-clock"></i></div>
+            <h3>Quick Process</h3>
+            <p>Streamlined documentation and fast transaction processes for your convenience.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-award"></i></div>
+            <h3>Trusted Brand</h3>
+            <p>Excellence in Tanzania's real estate market with thousands of satisfied clients.</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fa fa-file-contract"></i></div>
+            <h3>Legal Support</h3>
+            <p>Complete legal assistance and documentation support throughout the buying process.</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
