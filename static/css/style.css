@@ -80,3 +80,54 @@ input, select, textarea { width: 100%; padding: 12px; margin: 10px 0 20px 0; bor
 
 /* MAP */
 .map-container { margin-top: 30px; border-radius: 12px; overflow: hidden; height: 300px; border: 2px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+/* =========================================
+   NEW LAYOUT ADDITIONS (Based on Screenshots)
+   ========================================= */
+
+/* Split Hero Section */
+.hero-split {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.hero-text { flex: 1; min-width: 300px; color: white; text-align: left; }
+.hero-text h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
+.hero-text h1 span { color: #facc15; } /* Yellow highlight from screenshot */
+.hero-text p { font-size: 1.1rem; margin-bottom: 30px; opacity: 0.9; }
+
+/* Mini Trust Badges under Hero Text */
+.hero-badges { display: flex; gap: 15px; margin-top: 30px; }
+.hero-badge { background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; width: 120px;}
+.hero-badge i { color: #facc15; font-size: 1.5rem; margin-bottom: 8px; }
+
+/* Quick Search Box */
+.search-box-container { flex: 0.8; min-width: 350px; background: white; padding: 35px; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.search-box-container h2 { color: var(--dark); margin-bottom: 25px; font-size: 1.5rem; }
+.search-form-group { margin-bottom: 15px; position: relative; }
+.search-form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 5px; }
+.search-form-group i { position: absolute; bottom: 15px; left: 15px; color: #999; }
+.search-input { width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem; background: #fafafa; }
+.price-split { display: flex; gap: 15px; }
+.price-split .search-input { padding-left: 15px; } /* No icon on price */
+
+/* Card Updates (Badges & Footer) */
+.card { position: relative; }
+.badge-featured { position: absolute; top: 15px; left: 15px; background: #f59e0b; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; z-index: 10;}
+.heart-icon { position: absolute; top: 15px; right: 15px; background: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ccc; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; transition: 0.2s;}
+.heart-icon:hover { color: var(--primary-red); }
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+.phone-btn { background: #10b981; color: white; width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; text-decoration: none; transition: 0.2s; }
+.phone-btn:hover { background: #059669; }
+
+/* 6-Box Features Grid */
+.benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 60px 0; }
+.benefit-card { background: white; padding: 40px 30px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; transition: transform 0.3s ease;}
+.benefit-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+.benefit-icon { width: 70px; height: 70px; background: #e6fcf5; color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
+.benefit-card h3 { color: var(--dark); margin-bottom: 15px; font-size: 1.2rem; }
+.benefit-card p { color: #666; font-size: 0.95rem; line-height: 1.6; }
