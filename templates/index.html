@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="card-footer">
-                    <div class="price" style="margin: 0; font-size: 1.2rem;">TZS {{ "{:,.0f}".format(plot.price or 0) }}</div>
+               <div class="price" style="margin: 0; font-size: 1.2rem;">TZS {{ plot.price | format_currency }}</div>
                     <div style="display: flex; gap: 10px;">
                         <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="padding: 10px 15px; border-radius: 8px;">View Details</a>
                         <a href="https://wa.me/255658200422" class="phone-btn"><i class="fa-brands fa-whatsapp"></i></a>
