@@ -69,21 +69,25 @@
             <div class="badge-featured">Featured</div>
             <div class="heart-icon"><i class="fa fa-heart"></i></div>
             
-            {% if plot.images %}
+            {% if plot.images and plot.images|length > 0 %}
                 <img src="{{ url_for('static', filename='uploads/' + plot.images[0].filename) }}">
+            {% else %}
+                 <div style="height:220px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; color: #999; font-weight: bold;">
+                    <i class="fa fa-image" style="margin-right: 8px;"></i> No Image
+                </div>
             {% endif %}
             
             <div class="card-body">
-                <h3 style="color: var(--dark);">{{ plot.title }}</h3>
-                <p style="color:#666; font-size: 0.9rem; margin-bottom: 15px;"><i class="fa fa-map-marker-alt"></i> {{ plot.location }}</p>
+                <h3 style="color: var(--dark);">{{ plot.title or 'Untitled' }}</h3>
+                <p style="color:#666; font-size: 0.9rem; margin-bottom: 15px;"><i class="fa fa-map-marker-alt"></i> {{ plot.location or 'N/A' }}</p>
                 
                 <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #555;">
-                    <span><i class="fa fa-square"></i> {{ plot.sqm_size }} sqm</span>
-                    <span style="color: var(--primary-blue);"><i class="fa fa-tag"></i> {{ plot.status }}</span>
+                    <span><i class="fa fa-square"></i> {{ plot.sqm_size or 'N/A' }} sqm</span>
+                    <span style="color: var(--primary-blue);"><i class="fa fa-tag"></i> {{ plot.status or 'N/A' }}</span>
                 </div>
 
                 <div class="card-footer">
-                    <div class="price" style="margin: 0; font-size: 1.2rem;">TZS {{ "{:,.0f}".format(plot.price) }}</div>
+                    <div class="price" style="margin: 0; font-size: 1.2rem;">TZS {{ "{:,.0f}".format(plot.price or 0) }}</div>
                     <div style="display: flex; gap: 10px;">
                         <a href="{{ url_for('property_detail', plot_id=plot.id) }}" class="btn btn-blue" style="padding: 10px 15px; border-radius: 8px;">View Details</a>
                         <a href="https://wa.me/255658200422" class="phone-btn"><i class="fa-brands fa-whatsapp"></i></a>
