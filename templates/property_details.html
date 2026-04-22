@@ -15,31 +15,32 @@
             <h3 style="margin-top:40px; color: var(--dark);">Location Map</h3>
             <div class="map-container">
                 <iframe width="100%" height="100%" frameborder="0" style="border:0"
-                    src="https://maps.google.com/maps?q={{ plot.location|urlencode }}&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen>
+                    src="https://maps.google.com/maps?q={{ (plot.location or 'Tanzania') | replace(' ', '%20') }}&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen>
                 </iframe>
             </div>
         </div>
 
         <div style="flex:1; min-width:320px; background:white; padding:40px; border-radius:15px; box-shadow:0 15px 35px rgba(0,0,0,0.08); border-top: 6px solid var(--primary-blue);">
-            <h1 style="color:var(--primary-blue); font-size: 2rem; line-height: 1.2;">{{ plot.title }}</h1>
-            <div class="price" style="font-size:2.2rem; margin: 20px 0;">TZS {{ "{:,.0f}".format(plot.price) }}</div>
+            <h1 style="color:var(--primary-blue); font-size: 2rem; line-height: 1.2;">{{ plot.title or 'Untitled Property' }}</h1>
+            
+            <div class="price" style="font-size:2.2rem; margin: 20px 0;">TZS {{ "{:,.0f}".format(plot.price or 0) }}</div>
             
             <hr style="margin:20px 0; border:0; border-top:2px solid #f0f0f0;">
             
             <div style="font-size: 1.1rem; color: #555; margin-bottom: 20px;">
-                <p style="margin-bottom: 15px;"><strong><i class="fa fa-ruler-combined" style="color: var(--primary-blue); width: 25px;"></i> Size:</strong> {{ plot.sqm_size }} Sqm</p>
-                <p style="margin-bottom: 15px;"><strong><i class="fa fa-map-marker-alt" style="color: var(--primary-blue); width: 25px;"></i> Area:</strong> {{ plot.location }}</p>
+                <p style="margin-bottom: 15px;"><strong><i class="fa fa-ruler-combined" style="color: var(--primary-blue); width: 25px;"></i> Size:</strong> {{ plot.sqm_size or 'N/A' }} Sqm</p>
+                <p style="margin-bottom: 15px;"><strong><i class="fa fa-map-marker-alt" style="color: var(--primary-blue); width: 25px;"></i> Area:</strong> {{ plot.location or 'Location Not Specified' }}</p>
                 <p><strong><i class="fa fa-tag" style="color: var(--primary-blue); width: 25px;"></i> Status:</strong> 
-                    <span style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %}; font-weight: bold;">{{ plot.status }}</span>
+                    <span style="color: {% if plot.status == 'Available' %}green{% else %}var(--primary-red){% endif %}; font-weight: bold;">{{ plot.status or 'Unknown' }}</span>
                 </p>
             </div>
             
             <hr style="margin:30px 0; border:0; border-top:2px solid #f0f0f0;">
             
             <h3 style="margin-bottom: 10px; color: var(--dark);">Description</h3>
-            <p style="white-space: pre-wrap; color: #666; line-height: 1.8;">{{ plot.description }}</p>
+            <p style="white-space: pre-wrap; color: #666; line-height: 1.8;">{{ plot.description or 'No description provided.' }}</p>
             
-            <a href="https://wa.me/255658200422?text=Hello,%20I%20am%20interested%20in%20property:%20{{ plot.title|urlencode }}" target="_blank" class="btn btn-blue" style="width:100%; margin-top:30px; font-size: 1.1rem; padding: 15px;">
+            <a href="https://wa.me/255658200422?text=Hello,%20I%20am%20interested%20in%20property:%20{{ (plot.title or 'Unknown') | replace(' ', '%20') }}" target="_blank" class="btn btn-blue" style="width:100%; margin-top:30px; font-size: 1.1rem; padding: 15px;">
                 <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem; margin-right: 8px;"></i> Contact via WhatsApp
             </a>
         </div>
