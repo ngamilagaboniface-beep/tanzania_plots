@@ -1,14 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="login-container">
-    <h2 style="text-align:center; color:var(--primary-blue)">Admin Login</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <label>Username</label>
-        {{ form.username() }}
-        <label>Password</label>
-        {{ form.password() }}
-        <button type="submit" class="btn btn-blue" style="width:100%">Enter Dashboard</button>
+<div class="container" style="max-width: 400px; margin: 80px auto; padding: 40px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+    <h2 style="text-align:center; color: var(--primary-blue); margin-bottom: 30px;">Admin Login</h2>
+    
+    <form method="POST" action="{{ url_for('admin_login') }}">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Username</label>
+            <input type="text" name="username" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 8px;">Password</label>
+            <input type="password" name="password" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+        
+        <button type="submit" class="btn btn-blue" style="width:100%; padding: 15px; font-size: 1.1rem; background: #10b981; border:none; border-radius: 8px; color:white;">Login</button>
     </form>
 </div>
 {% endblock %}
