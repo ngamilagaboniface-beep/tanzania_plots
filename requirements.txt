@@ -1,7 +1,4 @@
 Flask
 Flask-SQLAlchemy
-Flask-WTF
 Werkzeug
-WTForms
-Pillow
 gunicorn
