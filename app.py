@@ -7,7 +7,7 @@ from functools import wraps
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
-app.config['SECRET_KEY'] = 'tanzania_plots_secure'
+app.config['SECRET_KEY'] = 'tanzania_plots_secure_2026'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -56,7 +56,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# --- ROUTES ---
+# --- PUBLIC ROUTES ---
 @app.route('/')
 def index():
     plots = Plot.query.filter_by(status='Available').order_by(Plot.id.desc()).all()
@@ -72,11 +72,11 @@ def property_detail(plot_id):
     plot = Plot.query.get_or_404(plot_id)
     return render_template('property_detail.html', plot=plot)
 
-# --- SIMPLE ADMIN ROUTES ---
+# --- ADMIN ROUTES ---
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        # Hardcoded simple login to prevent database crashing
+        # Simple, fast login without complex form validators
         if request.form.get('username') == 'admin' and request.form.get('password') == 'password':
             session['logged_in'] = True
             return redirect(url_for('admin_dashboard'))
@@ -94,6 +94,44 @@ def admin_logout():
 def admin_dashboard():
     plots_count = Plot.query.count()
     return render_template('admin/dashboard.html', plots_count=plots_count)
+
+@app.route('/admin/plots/create', methods=['GET', 'POST'])
+@login_required
+def admin_plot_create():
+    if request.method == 'POST':
+        try:
+            # Safely handle the price to prevent math crashes
+            raw_price = request.form.get('price', '0')
+            clean_price = float(raw_price.replace(',', '').replace(' ', '')) if raw_price else 0.0
+            
+            plot = Plot(
+                title=request.form.get('title'),
+                location=request.form.get('location'),
+                price=clean_price,
+                sqm_size=request.form.get('sqm_size'),
+                status=request.form.get('status'),
+                description=request.form.get('description')
+            )
+            db.session.add(plot)
+            db.session.flush()
+
+            # Handle basic image uploads
+            images = request.files.getlist('images')
+            for image in images:
+                if image and image.filename != '':
+                    filename = secure_filename(f"{plot.id}_{image.filename}")
+                    image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    image.save(image_path) 
+                    db.session.add(PlotImage(filename=filename, plot_id=plot.id))
+
+            db.session.commit()
+            flash('Property published successfully!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error uploading property: {str(e)}', 'error')
+            
+    return render_template('admin/plot_edit.html')
 
 # --- INITIALIZE DB ---
 with app.app_context():
